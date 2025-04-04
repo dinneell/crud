@@ -1,0 +1,25 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crud/bloc/task_cubit.dart';
+import 'package:crud/screens/home_screen.dart';
+import 'package:crud/db/task_dao.dart';
+
+class MyApp extends StatelessWidget {
+  final TaskDao taskDao;
+  const MyApp(this.taskDao, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TaskCubit(taskDao)..fetchTasks(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Task Manager',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: HomeScreen(),
+      ),
+    );
+  }
+}

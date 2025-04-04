@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/task_cubit.dart';
+import '../db/task.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final taskCubit = context.read<TaskCubit>();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Задачи')),
+      body: BlocBuilder<TaskCubit, List<Task>>(
+        builder: (context, tasks) {
+          return ListView.builder(
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              return ListTile(
+                title: Text(task.title),
+                subtitle: Text(task.description),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => taskCubit.deleteTask(task),
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddDialog(context),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showAddDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final taskCubit = context.read<TaskCubit>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Добавить задачу'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: titleController, decoration: const InputDecoration(labelText: 'Название')),
+            TextField(controller: descriptionController, decoration: const InputDecoration(labelText: 'Описание')),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () {
+              taskCubit.addTask(titleController.text, descriptionController.text);
+              Navigator.pop(context);
+            },
+            child: const Text('Добавить'),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,0 +1,29 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crud/db/task_dao.dart';
+import 'package:crud/db/task.dart';
+
+class TaskCubit extends Cubit<List<Task>> {
+  final TaskDao taskDao;
+
+  TaskCubit(this.taskDao) : super([]);
+
+  Future<void> fetchTasks() async {
+    final tasks = await taskDao.getAllTasks();
+    emit(tasks);
+  }
+
+  Future<void> addTask(Task task) async {
+    await taskDao.insertTask(task);
+    fetchTasks();
+  }
+
+  Future<void> updateTask(Task task) async {
+    await taskDao.updateTask(task);
+    fetchTasks();
+  }
+
+  Future<void> deleteTask(Task task) async {
+    await taskDao.deleteTask(task);
+    fetchTasks();
+  }
+}
